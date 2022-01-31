@@ -93,6 +93,7 @@ namespace xeus_sqlite
             Deletes the database.
         */
         if(m_db_path !=std::string(":memory:"))
+        {
             if(std::remove(m_db_path.c_str()) != 0)
             {
                 throw std::runtime_error("Error deleting file.");
