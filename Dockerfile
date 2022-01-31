@@ -303,7 +303,10 @@ RUN mkdir -p /opt/sqlitecpp/build && \
 RUN cd /opt/sqlitecpp/build && \
     emcmake cmake ../src/ \
         -DCMAKE_INSTALL_PREFIX=/install \
-        -DJSON_BuildTests=OFF
+        -DJSON_BuildTests=OFF\
+        -DSQLITECPP_USE_STACK_PROTECTION=OFF\
+        -DCMAKE_CXX_FLAGS="-fno-stack-protector -U_FORTIFY_SOURCE "\
+        -DCMAKE_C_FLAGS="-fno-stack-protector -U_FORTIFY_SOURCE "
 
 RUN cd /opt/sqlitecpp/build && \
     emmake make -j8 install
@@ -324,7 +327,7 @@ COPY . /opt/xeus-sqlite
 
 RUN mkdir -p /xeus-sqlite-build && cd /xeus-sqlite-build  && ls && \
     emcmake cmake  /opt/xeus-sqlite \
-        -DXEUS_LUA_EMSCRIPTEN_WASM_BUILD=ON \
+        -DXSQL_EMSCRIPTEN_WASM_BUILD=ON \
         -DCMAKE_INSTALL_PREFIX=/install \
         -Dnlohmann_json_DIR=/install/lib/cmake/nlohmann_json \
         -Dxtl_DIR=/install/share/cmake/xtl \
@@ -336,11 +339,13 @@ RUN mkdir -p /xeus-sqlite-build && cd /xeus-sqlite-build  && ls && \
         -DSQLiteCpp_DIR=/install/lib/cmake/SQLiteCpp\
         -Dxvega_DIR=/install/lib/cmake/xvega \
         -Dxvega-bindings_DIR=/install/lib/cmake/xvega-bindings \
+        -DXSQL_USE_SHARED_XEUS=OFF\
         -DXSQL_BUILD_SHARED=OFF\
         -DXSQL_BUILD_STATIC=ON\
+        -DXSQL_BUILD_XSQLITE_EXECUTABLE=OFF\
         -Dxeus_DIR=/install/lib/cmake/xeus \
         -DCMAKE_CXX_FLAGS="-Oz -flto"
 
 RUN cd /xeus-sqlite-build && \
-    emmake make -j8 xeus-sqlite-static
+    emmake make -j8
 

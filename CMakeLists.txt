@@ -63,6 +63,7 @@ OPTION(XSQL_USE_SHARED_XEUS_SQLITE "Link xsqlite with the xeus-sqlite shared lib
 
 OPTION(XSQL_DOWNLOAD_GTEST "build gtest from downloaded sources" OFF)
 OPTION(XSQL_BUILD_TESTS "xeus-sqlite test suite" OFF)
+OPTION(XSQL_EMSCRIPTEN_WASM_BUILD "Build for wasm with emscripten" OFF)
 
 # Dependencies
 # ============
@@ -109,6 +110,26 @@ include(CheckCXXCompilerFlag)
 string(TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE)
 
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib; ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
+
+if(XSQL_EMSCRIPTEN_WASM_BUILD)
+
+    include(XeusEmscriptenWasmFlags)
+
+    # async
+    set(XEUS_EMSCRIPTEN_WASM_FLAGS "${XEUS_EMSCRIPTEN_WASM_FLAGS} --bind --std=c++17")
+    set(XEUS_EMSCRIPTEN_WASM_FLAGS "${XEUS_EMSCRIPTEN_WASM_FLAGS} -s ASYNCIFY=1 ")
+    set(XEUS_EMSCRIPTEN_WASM_FLAGS "${XEUS_EMSCRIPTEN_WASM_FLAGS} -s 'ASYNCIFY_STACK_SIZE=20480'")
+
+    # ENV (https://github.com/emscripten-core/emscripten/commit/6d9681ad04f60b41ef6345ab06c29bbc9eeb84e0)
+    set(EMSCRIPTEN_FEATURES "${EMSCRIPTEN_FEATURES} -s \"EXTRA_EXPORTED_RUNTIME_METHODS=[ENV']\"")
+    # filesystem
+    #file(COPY asset_dir DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+    #set(XEUS_EMSCRIPTEN_WASM_FLAGS "${XEUS_EMSCRIPTEN_WASM_FLAGS} --embed-file asset_dir")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${XEUS_EMSCRIPTEN_WASM_FLAGS} -fno-stack-protector")
+    set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS}  ${XEUS_EMSCRIPTEN_WASM_FLAGS} ---proxy-to-worker")
+endif()
+
 
 macro(xsql_set_common_options target_name)
     if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR
@@ -221,8 +242,10 @@ macro(xsql_create_target target_name linkage output_name)
       SQLite::SQLite3
     )
 
+    if(NOT XSQL_EMSCRIPTEN_WASM_BUILD)
     # find_package(Threads) # TODO: add Threads as a dependence of xeus-static?
-    target_link_libraries(${target_name} PRIVATE ${CMAKE_THREAD_LIBS_INIT})
+        target_link_libraries(${target_name} PRIVATE ${CMAKE_THREAD_LIBS_INIT})
+    endif()
 endmacro()
 
 # xeus-sqlite
@@ -278,6 +301,16 @@ endif()
 
 if(XSQL_BUILD_TESTS)
     add_subdirectory(test)
+endif()
+
+
+if(XSQL_EMSCRIPTEN_WASM_BUILD)
+    message(STATUS ${XEUS_LUA_LUA_LIBRARIES})
+
+    add_executable(xeus_kernel src/main_emscripten_kernel.cpp )
+    target_link_libraries(xeus_kernel  xeus-static xeus-sqlite-static)
+    target_compile_features(xeus_kernel PRIVATE cxx_std_17)
+
 endif()
 
 # Installation
