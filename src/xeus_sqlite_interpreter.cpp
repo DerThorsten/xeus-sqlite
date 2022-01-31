@@ -74,8 +74,12 @@ namespace xeus_sqlite
         m_bd_is_loaded = true;
         m_db_path = tokenized_input[2];
 
-        /* Creates the file */
-        std::ofstream(m_db_path.c_str()).close();
+
+        if(m_db_path !=std::string(":memory:"))
+        {
+            /* Creates the file */
+            std::ofstream(m_db_path.c_str()).close();
+        }
 
         /* Creates the database */
         m_db = std::make_unique<SQLite::Database>(m_db_path,
@@ -88,10 +92,11 @@ namespace xeus_sqlite
         /*
             Deletes the database.
         */
-
-        if(std::remove(m_db_path.c_str()) != 0)
-        {
-            throw std::runtime_error("Error deleting file.");
+        if(m_db_path !=std::string(":memory:"))
+            if(std::remove(m_db_path.c_str()) != 0)
+            {
+                throw std::runtime_error("Error deleting file.");
+            }
         }
     }
 
@@ -180,7 +185,7 @@ namespace xeus_sqlite
         {
             m_db_path = tokenized_input[1];
             std::ifstream path_is_valid(m_db_path);
-            if (!path_is_valid.is_open())
+            if (m_db_path != std::string(":memory:") && !path_is_valid.is_open())
             {
                 throw std::runtime_error("The path doesn't exist.");
             }
