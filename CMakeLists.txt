@@ -105,7 +105,7 @@ set(XSQLITE_SRC ${XEUS_SQLITE_SRC_DIR}/main.cpp)
 
 include(CheckCXXCompilerFlag)
 
-set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+# set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
 string(TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE)
 
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib; ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")

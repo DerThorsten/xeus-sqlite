@@ -586,7 +586,6 @@ namespace xeus_sqlite
         // and discard the right side of the curser pos
         const auto code = raw_code.substr(0, cursor_pos);
 
-
         // keyword matches
         // ............................
         {
@@ -637,7 +636,9 @@ namespace xeus_sqlite
 
     nl::json interpreter::kernel_info_request_impl()
     {
+        #if 0
         nl::json result;
+        result["status"] = "ok";
         result["implementation"] = "xsqlite";
         result["implementation_version"] = XSQLITE_VERSION;
 
@@ -662,8 +663,19 @@ namespace xeus_sqlite
         result["language_info"]["codemirror_mode"] = "sql";
         result["language_info"]["version"] = SQLite::VERSION;
         result["language_info"]["mimetype"] = "";
-        result["language_info"]["file_extension"] = "";
+        result["language_info"]["file_extension"] = "sql";
         return result;
+        #else
+        nl::json result;
+        result["implementation"] = "xsqlite";
+        result["implementation_version"] = XSQLITE_VERSION;
+        result["banner"] = "xsqlite";
+        result["language_info"]["name"] = "sqlite3";
+        result["language_info"]["version"] = XSQLITE_VERSION;
+        result["language_info"]["mimetype"] = "text/x-sqlite3-console";
+        result["language_info"]["file_extension"] = ".sqlite3-console";
+        return result;
+        #endif
     }
 
     void interpreter::shutdown_request_impl()
