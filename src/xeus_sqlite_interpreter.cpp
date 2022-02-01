@@ -243,6 +243,7 @@ namespace xeus_sqlite
         }
         else if (xv_bindings::case_insentive_equals(tokenized_input[0], "SYNC"))
         {
+            std::cout<<"ems_sync_db\n";
             return ems_sync_db();
         }
 
@@ -298,6 +299,7 @@ namespace xeus_sqlite
     void interpreter::configure_impl()
     {
         #ifdef XSQL_EMSCRIPTEN_WASM_BUILD
+        std::cout<<"initialize em_init_idbfs\n";
         em_init_idbfs();
         #endif
     }
