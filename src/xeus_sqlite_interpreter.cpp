@@ -42,7 +42,7 @@ namespace xeus_sqlite
             //mount persistent directory as IDBFS
             FS.mount(IDBFS,{},'/persistent_data');
 
-            Module.print("start file sync..");
+            // Module.print("start file sync..");
             //flag to check when data are synchronized
             Module.syncdone = 0;
 
@@ -54,7 +54,7 @@ namespace xeus_sqlite
             //second parameter = function called when data are synchronized
             FS.syncfs(true, function(err) {
                 assert(!err);
-                Module.print("end file sync..");
+                // Module.print("end file sync..");
                 Module.syncdone = 1;
             });
         );
