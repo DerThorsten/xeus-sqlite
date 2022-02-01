@@ -241,6 +241,11 @@ namespace xeus_sqlite
         {
             return create_db(tokenized_input);
         }
+        else if (xv_bindings::case_insentive_equals(tokenized_input[0], "SYNC"))
+        {
+            return ems_sync_db();
+        }
+
         if (m_bd_is_loaded)
         {
             if (xv_bindings::case_insentive_equals(tokenized_input[0], "DELETE"))
@@ -292,6 +297,9 @@ namespace xeus_sqlite
 
     void interpreter::configure_impl()
     {
+        #ifdef XSQL_EMSCRIPTEN_WASM_BUILD
+        em_init_idbfs();
+        #endif
     }
 
     void interpreter::process_SQLite_input(int execution_counter,
