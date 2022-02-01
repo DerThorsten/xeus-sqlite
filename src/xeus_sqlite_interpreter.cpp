@@ -25,8 +25,50 @@
 #include <SQLiteCpp/VariadicBind.h>
 #include <SQLiteCpp/SQLiteCpp.h>
 
+#ifdef XSQL_EMSCRIPTEN_WASM_BUILD
+#include  <emscripten/emscripten.h>
+#endif
+
 namespace xeus_sqlite
 {
+
+    #ifdef XSQL_EMSCRIPTEN_WASM_BUILD
+    // https://uncovergame.com/2015/06/06/persisting-data-with-emscripten/
+    void em_init_idbfs(){
+        EM_ASM(
+            //create your directory where we keep our persistent data
+            FS.mkdir('/persistent_data'); 
+
+            //mount persistent directory as IDBFS
+            FS.mount(IDBFS,{},'/persistent_data');
+
+            Module.print("start file sync..");
+            //flag to check when data are synchronized
+            Module.syncdone = 0;
+
+            //populate persistent_data directory with existing persistent source data 
+            //stored with Indexed Db
+            //first parameter = "true" mean synchronize from Indexed Db to 
+            //Emscripten file system,
+            // "false" mean synchronize from Emscripten file system to Indexed Db
+            //second parameter = function called when data are synchronized
+            FS.syncfs(true, function(err) {
+                assert(!err);
+                Module.print("end file sync..");
+                Module.syncdone = 1;
+            });
+        );
+    }
+    void ems_sync_db(){
+        EM_ASM(
+            //persist changes
+            FS.syncfs(false,function (err) {
+                              assert(!err);
+            });
+        );
+    }
+    #endif
+
 
     inline bool startswith(const std::string& str, const std::string& cmp)
     {

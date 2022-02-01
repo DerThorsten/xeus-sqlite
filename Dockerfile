@@ -78,24 +78,24 @@ RUN cd /xeus-build && \
 
 
 
-##################################################################
-# xwidgets
-##################################################################
-RUN mkdir -p /opt/xwidgets/build && \
-    git clone --branch  0.26.1 --depth 1 https://github.com/jupyter-xeus/xwidgets.git  /opt/xwidgets/src
+# ##################################################################
+# # xwidgets
+# ##################################################################
+# RUN mkdir -p /opt/xwidgets/build && \
+#     git clone --branch  0.26.1 --depth 1 https://github.com/jupyter-xeus/xwidgets.git  /opt/xwidgets/src
 
-RUN cd /opt/xwidgets/build && \
-    emcmake cmake ../src/  \
-    -Dxtl_DIR=/install/share/cmake/xtl \
-    -Dxproperty_DIR=/install/lib/cmake/xproperty \
-    -Dnlohmann_json_DIR=/install/lib/cmake/nlohmann_json \
-    -Dxeus_DIR=/install/lib/cmake/xeus \
-    -DXWIDGETS_BUILD_SHARED_LIBS=OFF \
-    -DXWIDGETS_BUILD_STATIC_LIBS=ON  \
-    -DCMAKE_INSTALL_PREFIX=/install \
-    -DCMAKE_CXX_FLAGS="-Oz -flto"
-RUN cd /opt/xwidgets/build && \
-    emmake make -j8 install
+# RUN cd /opt/xwidgets/build && \
+#     emcmake cmake ../src/  \
+#     -Dxtl_DIR=/install/share/cmake/xtl \
+#     -Dxproperty_DIR=/install/lib/cmake/xproperty \
+#     -Dnlohmann_json_DIR=/install/lib/cmake/nlohmann_json \
+#     -Dxeus_DIR=/install/lib/cmake/xeus \
+#     -DXWIDGETS_BUILD_SHARED_LIBS=OFF \
+#     -DXWIDGETS_BUILD_STATIC_LIBS=ON  \
+#     -DCMAKE_INSTALL_PREFIX=/install \
+#     -DCMAKE_CXX_FLAGS="-Oz -flto"
+# RUN cd /opt/xwidgets/build && \
+#     emmake make -j8 install
 
 
 ##################################################################
@@ -110,8 +110,8 @@ RUN cd /opt/xvega/build && \
     -Dxproperty_DIR=/install/lib/cmake/xproperty \
     -Dnlohmann_json_DIR=/install/lib/cmake/nlohmann_json \
     -Dxeus_DIR=/install/lib/cmake/xeus \
-    -DXVEGA_BUILD_SHAREDS=OFF \
-    -DXVEGA_BUILD_STATICS=ON  \
+    -DXVEGA_BUILD_SHARED=ON \
+    -DXVEGA_BUILD_STATIC=OFF  \
     -DCMAKE_INSTALL_PREFIX=/install \
     -DCMAKE_CXX_FLAGS="-Oz -flto"
 RUN cd /opt/xvega/build && \
@@ -197,7 +197,6 @@ RUN mkdir -p /xeus-sqlite-build && cd /xeus-sqlite-build  && ls && \
         -Dnlohmann_json_DIR=/install/lib/cmake/nlohmann_json \
         -Dxtl_DIR=/install/share/cmake/xtl \
         -Dxproperty_DIR=/install/lib/cmake/xproperty \
-        -Dxwidgets_DIR=/install/lib/cmake/xwidgets \
         -DSQLite3_LIBRARY=/install/lib/libsqlite3.a\
         -DSQLite3_INCLUDE_DIR=/install/include/\
         -Dtabulate_DIR=/install/lib/cmake/tabulate\
