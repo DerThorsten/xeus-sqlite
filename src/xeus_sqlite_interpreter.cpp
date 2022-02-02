@@ -232,7 +232,13 @@ namespace xeus_sqlite
     void interpreter::parse_SQLite_magic(int execution_counter,
                                     const std::vector<
                                         std::string>& tokenized_input)
-    {
+    {   
+        std::cout<<"tokenized_input: ";
+        for(ti : tokenized_input)
+        {
+            std::cout<<ti<<" ";
+        }
+        std::cout<<"\n";
         if (xv_bindings::case_insentive_equals(tokenized_input[0], "LOAD"))
         {
             m_db_path = tokenized_input[1];
