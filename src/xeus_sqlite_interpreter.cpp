@@ -19,7 +19,7 @@
 
 #include <iostream>
 #include <fstream>  
-
+#include <sstream>
 
 
 #include "xvega-bindings/xvega_bindings.hpp"
@@ -33,12 +33,82 @@
 
 #ifdef XSQL_EMSCRIPTEN_WASM_BUILD
 #include  <emscripten/emscripten.h>
+#include <emscripten/fetch.h>
+
 #endif
 
 namespace xeus_sqlite
 {
 
     #ifdef XSQL_EMSCRIPTEN_WASM_BUILD
+
+
+    // void downloadSucceeded(emscripten_fetch_t *fetch) {
+
+    //     auto & interpreter = xeus::get_interpreter();
+    //     interpreter.publish_stream("stdout", ss.str());
+
+    //     printf("Finished downloading %llu bytes from URL %s.\n", fetch->numBytes, fetch->url);
+    //     // The data is now available at fetch->data[0] through fetch->data[fetch->numBytes-1];
+    //     emscripten_fetch_close(fetch); // Free data associated with the fetch.
+    // }
+
+    // void downloadFailed(emscripten_fetch_t *fetch) {
+    //   printf("Downloading %s failed, HTTP failure status code: %d.\n", fetch->url, fetch->status);
+    //   emscripten_fetch_close(fetch); // Also free data on failure.
+    }
+
+
+    void fetch(const std::string url, const std::string filename)
+    {
+        //https://github.com/lerocha/chinook-database/blob/master/ChinookDatabase/DataSources/Chinook_Sqlite.sqlite?raw=true
+        std::stringstream ss;
+        ss<<"fetching: url: "<<url<<" to "<<filename<<"\n";
+        auto & interpreter = xeus::get_interpreter();
+        interpreter.publish_stream("stdout", ss.str());
+
+
+        emscripten_fetch_attr_t attr;
+        emscripten_fetch_attr_init(&attr);
+        strcpy(attr.requestMethod, "GET");
+        attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
+
+        // fetch->data[0] through fetch->data[fetch->numBytes-1];
+
+
+        attr.onsuccess = [](emscripten_fetch_t *fetch){
+            std::stringstream s;
+            s<<"Finished downloading "<<fetch->numBytes<<" bytes from URL "<<fetch->url<<"\n";
+            auto & interpreter = xeus::get_interpreter();
+            interpreter.publish_stream("stdout", s.str());
+            emscripten_fetch_close(fetch);
+        };
+        attr.onerror = [](emscripten_fetch_t *fetch){
+            std::stringstream s;
+            s<<"Downloading "<fetch->url<<"failed , HTTP failure status code:"<<fetch->status<<"\n";
+            auto & interpreter = xeus::get_interpreter();
+            interpreter.publish_stream("stdout", s.str());
+            emscripten_fetch_close(fetch);
+        };
+        attr.onprogress = [](emscripten_fetch_t *fetch){
+            std::stringstream s;
+            auto & interpreter = xeus::get_interpreter();
+
+            if (fetch->totalBytes) {
+                s<<"Downloading "<<fetch->url<<" "<<fetch->dataOffset * 100.0 / fetch->totalBytes<<" complete.\n";
+            } else 
+            {
+                s<<"Downloading "<<fetch->url<<" "<<fetch->dataOffset + fetch->numBytes<<"bytes complete";
+            }
+
+            interpreter.publish_stream("stdout", s.str());
+        };
+        emscripten_fetch(&attr, url);
+
+
+    }
+
+
     // https://uncovergame.com/2015/06/06/persisting-data-with-emscripten/
     void em_init_idbfs(){
         EM_ASM(
@@ -118,7 +188,10 @@ namespace xeus_sqlite
             throw std::runtime_error("Wasn't able to load the database correctly.");
         }
     }
-
+    interpreter::interpreter()
+    {
+        xeus::register_interpreter(this);
+    }
     void interpreter::create_db(const std::vector<std::string> tokenized_input)
     {
         m_bd_is_loaded = true;
@@ -260,6 +333,11 @@ namespace xeus_sqlite
         {
             std::cout<<"ems_sync_db\n";
             return ems_sync_db();
+        }
+        else if (xv_bindings::case_insentive_equals(tokenized_input[0], "FETCH"))
+        {
+            std::cout<<"ems_sync_db\n";
+            return fetch(tokenized_input[1], tokenized_input[2]);
         }
         else if (xv_bindings::case_insentive_equals(tokenized_input[0], "TEST"))
         {
