@@ -128,6 +128,7 @@ namespace xeus_sqlite
         if(m_db_path !=std::string(":memory:"))
         {
             /* Creates the file */
+            std::cout<<"create file at: "<<m_db_path<<"\n";
             std::ofstream(m_db_path.c_str()).close();
         }
 
