@@ -103,7 +103,7 @@ namespace xeus_sqlite
 
             interpreter.publish_stream("stdout", s.str());
         };
-        emscripten_fetch(&attr, url);
+        emscripten_fetch(&attr, url.c_str());
 
 
     }
