@@ -92,7 +92,8 @@ namespace xeus_sqlite
             auto userData = reinterpret_cast<fetch_user_data *>(fetch->userData);
             auto filename = userData->filename;
             std::ofstream myFile;
-            interpreter.publish_stream("stdout","writing to "<<filename<<"\n");
+            interpreter.publish_stream("stdout","write to file:\n");
+            interpreter.publish_stream("stdout",filename);
             myFile.open(filename, std::ios::out | std::ios::binary);
             myFile.write (fetch->data[0], fetch->numBytes);
             interpreter.publish_stream("stdout","writing file done\n");
