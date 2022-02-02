@@ -37,10 +37,10 @@ namespace xeus_sqlite
     void em_init_idbfs(){
         EM_ASM(
             //create your directory where we keep our persistent data
-            FS.mkdir('/persistent_data'); 
+            FS.mkdir('JupyterLite Storage'); 
 
             //mount persistent directory as IDBFS
-            FS.mount(IDBFS,{},'/persistent_data');
+            FS.mount(IDBFS,{},'JupyterLite Storage');
 
             // Module.print("start file sync..");
             //flag to check when data are synchronized
@@ -54,6 +54,7 @@ namespace xeus_sqlite
             //second parameter = function called when data are synchronized
             FS.syncfs(true, function(err) {
                 assert(!err);
+                console.log("end from db file sync..")
                 // Module.print("end file sync..");
                 Module.syncdone = 1;
             });
@@ -63,7 +64,8 @@ namespace xeus_sqlite
         EM_ASM(
             //persist changes
             FS.syncfs(false,function (err) {
-                              assert(!err);
+                assert(!err);
+                console.log("end to db file sync..")
             });
         );
     }
