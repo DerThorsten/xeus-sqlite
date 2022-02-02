@@ -259,6 +259,7 @@ namespace xeus_sqlite
             std::ofstream outfile("/home/web_user/xeus_sqlite/testit.txt");
             outfile << "my text here!" << std::endl;
             outfile.close();
+            return;
         }
 
 
