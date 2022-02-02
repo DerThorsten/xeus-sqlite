@@ -95,7 +95,7 @@ namespace xeus_sqlite
             interpreter.publish_stream("stdout","write to file:\n");
             interpreter.publish_stream("stdout",filename);
             myFile.open(filename, std::ios::out | std::ios::binary);
-            myFile.write (fetch->data[0], fetch->numBytes);
+            myFile.write (fetch->data, fetch->numBytes);
             interpreter.publish_stream("stdout","writing file done\n");
             myFile.close();
             interpreter.publish_stream("stdout","close file\n");
