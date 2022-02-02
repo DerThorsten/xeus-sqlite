@@ -61,7 +61,7 @@ namespace xeus_sqlite
     struct fetch_user_data
     {
         std::string filename;
-    }
+    };
 
     void fetch(const std::string url, const std::string filename)
     {
