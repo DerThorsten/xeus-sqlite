@@ -234,7 +234,7 @@ namespace xeus_sqlite
                                         std::string>& tokenized_input)
     {   
         std::cout<<"tokenized_input: ";
-        for(ti : tokenized_input)
+        for(auto ti : tokenized_input)
         {
             std::cout<<ti<<" ";
         }
