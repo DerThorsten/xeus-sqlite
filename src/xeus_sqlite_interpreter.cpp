@@ -37,10 +37,10 @@ namespace xeus_sqlite
     void em_init_idbfs(){
         EM_ASM(
             //create your directory where we keep our persistent data
-            FS.mkdir('JupyterLite Storage'); 
+            FS.mkdir('/home/web_user/xeus_sqlite'); 
 
             //mount persistent directory as IDBFS
-            FS.mount(IDBFS,{},'JupyterLite Storage');
+            FS.mount(IDBFS,{},'/home/web_user/xeus_sqlite');
 
             // Module.print("start file sync..");
             //flag to check when data are synchronized
