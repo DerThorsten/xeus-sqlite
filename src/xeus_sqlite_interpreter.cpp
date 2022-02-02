@@ -54,7 +54,7 @@ namespace xeus_sqlite
             //second parameter = function called when data are synchronized
             FS.syncfs(true, function(err) {
                 assert(!err);
-                console.log("end from db file sync..")
+                console.log("end from db file sync..");
                 // Module.print("end file sync..");
                 Module.syncdone = 1;
             });
@@ -65,7 +65,7 @@ namespace xeus_sqlite
             //persist changes
             FS.syncfs(false,function (err) {
                 assert(!err);
-                console.log("end to db file sync..")
+                console.log("end to db file sync..");
             });
         );
     }
