@@ -56,7 +56,7 @@ namespace xeus_sqlite
     // void downloadFailed(emscripten_fetch_t *fetch) {
     //   printf("Downloading %s failed, HTTP failure status code: %d.\n", fetch->url, fetch->status);
     //   emscripten_fetch_close(fetch); // Also free data on failure.
-    }
+    // }
 
 
     void fetch(const std::string url, const std::string filename)
@@ -78,14 +78,14 @@ namespace xeus_sqlite
 
         attr.onsuccess = [](emscripten_fetch_t *fetch){
             std::stringstream s;
-            s<<"Finished downloading "<<fetch->numBytes<<" bytes from URL "<<fetch->url<<"\n";
+            s<<"Finished downloading "<<fetch->numBytes<<" bytes from URL "<<fetch->url;
             auto & interpreter = xeus::get_interpreter();
             interpreter.publish_stream("stdout", s.str());
             emscripten_fetch_close(fetch);
         };
         attr.onerror = [](emscripten_fetch_t *fetch){
             std::stringstream s;
-            s<<"Downloading "<<fetch->url<<"failed , HTTP failure status code:"<<fetch->status<<"\n";
+            s<<"Downloading "<<fetch->url<<"failed , HTTP failure status code:"<<fetch->status;
             auto & interpreter = xeus::get_interpreter();
             interpreter.publish_stream("stdout", s.str());
             emscripten_fetch_close(fetch);
@@ -95,7 +95,7 @@ namespace xeus_sqlite
             auto & interpreter = xeus::get_interpreter();
 
             if (fetch->totalBytes) {
-                s<<"Downloading "<<fetch->url<<" "<<fetch->dataOffset * 100.0 / fetch->totalBytes<<" complete.\n";
+                s<<"Downloading "<<fetch->url<<" "<<fetch->dataOffset * 100.0 / fetch->totalBytes<<" complete";
             } else 
             {
                 s<<"Downloading "<<fetch->url<<" "<<fetch->dataOffset + fetch->numBytes<<"bytes complete";
