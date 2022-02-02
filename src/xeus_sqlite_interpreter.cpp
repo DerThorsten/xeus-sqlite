@@ -16,6 +16,12 @@
 #include <vector>
 #include <tuple>
 
+
+#include <iostream>
+#include <fstream>  
+
+
+
 #include "xvega-bindings/xvega_bindings.hpp"
 #include "xeus/xinterpreter.hpp"
 #include "tabulate/table.hpp"
@@ -248,6 +254,14 @@ namespace xeus_sqlite
             std::cout<<"ems_sync_db\n";
             return ems_sync_db();
         }
+        else if (xv_bindings::case_insentive_equals(tokenized_input[0], "SYNC"))
+        {
+            std::ofstream outfile("/home/web_user/xeus_sqlite/testit.txt");
+            outfile << "my text here!" << std::endl;
+            outfile.close();
+        }
+
+
 
         if (m_bd_is_loaded)
         {
