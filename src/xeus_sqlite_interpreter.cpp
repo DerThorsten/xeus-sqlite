@@ -58,6 +58,10 @@ namespace xeus_sqlite
     //   emscripten_fetch_close(fetch); // Also free data on failure.
     // }
 
+    struct fetch_user_data
+    {
+        std::string filename;
+    }
 
     void fetch(const std::string url, const std::string filename)
     {
@@ -71,8 +75,10 @@ namespace xeus_sqlite
         emscripten_fetch_attr_t attr;
         emscripten_fetch_attr_init(&attr);
         strcpy(attr.requestMethod, "GET");
-        attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
-
+        attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;\
+        auto  userData = new fetch_user_data;
+        userData->filename = filename;
+        attr.userData = userData;
         // fetch->data[0] through fetch->data[fetch->numBytes-1];
 
 
@@ -81,7 +87,18 @@ namespace xeus_sqlite
             s<<"Finished downloading "<<fetch->numBytes<<" bytes from URL "<<fetch->url<<"\n";
             auto & interpreter = xeus::get_interpreter();
             interpreter.publish_stream("stdout", s.str());
+
             emscripten_fetch_close(fetch);
+            auto userData = reinterpret_cast<fetch_user_data *>(fetch->userData);
+            auto filename = userData->filename;
+            std::ofstream myFile;
+            interpreter.publish_stream("stdout","writing to "<<filename<<"\n");
+            myFile.open(filename, std::ios::out | std::ios::binary);
+            myFile.write (fetch->data[0], fetch->numBytes);
+            interpreter.publish_stream("stdout","writing file done\n");
+            myFile.close();
+            interpreter.publish_stream("stdout","close file\n");
+            delete userData;
         };
         attr.onerror = [](emscripten_fetch_t *fetch){
             std::stringstream s;
@@ -89,6 +106,8 @@ namespace xeus_sqlite
             auto & interpreter = xeus::get_interpreter();
             interpreter.publish_stream("stdout", s.str());
             emscripten_fetch_close(fetch);
+            auto userData = reinterpret_cast<fetch_user_data *>(fetch->userData);
+            delete userData;
         };
         attr.onprogress = [](emscripten_fetch_t *fetch){
             std::stringstream s;
