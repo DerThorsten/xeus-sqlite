@@ -85,7 +85,7 @@ namespace xeus_sqlite
         };
         attr.onerror = [](emscripten_fetch_t *fetch){
             std::stringstream s;
-            s<<"Downloading "<fetch->url<<"failed , HTTP failure status code:"<<fetch->status<<"\n";
+            s<<"Downloading "<<fetch->url<<"failed , HTTP failure status code:"<<fetch->status<<"\n";
             auto & interpreter = xeus::get_interpreter();
             interpreter.publish_stream("stdout", s.str());
             emscripten_fetch_close(fetch);
