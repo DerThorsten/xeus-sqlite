@@ -78,14 +78,14 @@ namespace xeus_sqlite
 
         attr.onsuccess = [](emscripten_fetch_t *fetch){
             std::stringstream s;
-            s<<"Finished downloading "<<fetch->numBytes<<" bytes from URL "<<fetch->url;
+            s<<"Finished downloading "<<fetch->numBytes<<" bytes from URL "<<fetch->url<<"\n";
             auto & interpreter = xeus::get_interpreter();
             interpreter.publish_stream("stdout", s.str());
             emscripten_fetch_close(fetch);
         };
         attr.onerror = [](emscripten_fetch_t *fetch){
             std::stringstream s;
-            s<<"Downloading "<<fetch->url<<"failed , HTTP failure status code:"<<fetch->status;
+            s<<"Downloading "<<fetch->url<<"failed , HTTP failure status code:"<<fetch->status"\n";
             auto & interpreter = xeus::get_interpreter();
             interpreter.publish_stream("stdout", s.str());
             emscripten_fetch_close(fetch);
@@ -95,10 +95,10 @@ namespace xeus_sqlite
             auto & interpreter = xeus::get_interpreter();
 
             if (fetch->totalBytes) {
-                s<<"Downloading "<<fetch->url<<" "<<fetch->dataOffset * 100.0 / fetch->totalBytes<<" complete";
+                s<<"Downloading "<<fetch->url<<" "<<fetch->dataOffset * 100.0 / fetch->totalBytes<<" complete\n";
             } else 
             {
-                s<<"Downloading "<<fetch->url<<" "<<fetch->dataOffset + fetch->numBytes<<"bytes complete";
+                s<<"Downloading "<<fetch->url<<" "<<fetch->dataOffset + fetch->numBytes<<"bytes complete\n";
             }
 
             interpreter.publish_stream("stdout", s.str());
@@ -336,7 +336,7 @@ namespace xeus_sqlite
         }
         else if (xv_bindings::case_insentive_equals(tokenized_input[0], "FETCH"))
         {
-            std::cout<<"ems_sync_db\n";
+            std::cout<<"ems_fetch\n";
             return fetch(tokenized_input[1], tokenized_input[2]);
         }
         else if (xv_bindings::case_insentive_equals(tokenized_input[0], "TEST"))
